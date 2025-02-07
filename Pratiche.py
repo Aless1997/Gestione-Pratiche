@@ -5,77 +5,76 @@ import csv
 import os
 from datetime import datetime
 
-# Nome del file CSV
 CSV_FILE = "pratiche.csv"
-
 
 class Applicazione:
     def __init__(self, parent):
         parent.title("Schedulatore Ordini di Vendita")
-        parent.geometry("600x450")
+        parent.geometry("900x900")
         parent.resizable(False, False)
 
-        # Centrare la finestra
         screen_width = parent.winfo_screenwidth()
         screen_height = parent.winfo_screenheight()
         x = (screen_width - 600) // 2
-        y = (screen_height - 450) // 2
+        y = (screen_height - 500) // 2
         parent.geometry(f"+{x}+{y}")
 
-        # Applicare un tema moderno
         style = Style(theme="superhero")
 
-        # Frame principale
-        main_frame = ttk.Frame(parent, padding=20)
-        main_frame.pack(fill="both", expand=True)
+        # Frame principale con bordo
+        main_frame = ttk.Frame(parent, padding=15, borderwidth=2, relief="ridge")
+        main_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # Titolo principale
-        ttk.Label(main_frame, text='Schedulatore per ordini di vendita:', font=("Arial", 14, "bold")).grid(row=0,
-                                                                                                           column=0,
-                                                                                                           columnspan=3,
-                                                                                                           pady=10)
+        # Titolo con bordo
+        title_frame = ttk.LabelFrame(main_frame, text="Schedulatore per ordini", padding=10)
+        title_frame.pack(fill="x", pady=10)
 
-        # Etichette e campi di input
-        ttk.Label(main_frame, text="Numero Pratica:", font=("Arial", 10)).grid(row=1, column=0, padx=5, pady=5,
-                                                                               sticky="w")
+        ttk.Label(title_frame, text="Schedulatore per ordini di vendita", font=("Arial", 14, "bold")).pack()
+
+        # Frame per i campi di input con bordo
+        input_frame = ttk.LabelFrame(main_frame, text="Dati Pratica", padding=10)
+        input_frame.pack(fill="x", pady=10)
+
+        ttk.Label(input_frame, text="Numero Pratica:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
         self.input1 = StringVar()
-        self.nPratica = ttk.Entry(main_frame, textvariable=self.input1, width=30)
-        self.nPratica.grid(row=1, column=1, padx=5, pady=5)
+        self.nPratica = ttk.Entry(input_frame, textvariable=self.input1, width=30)
+        self.nPratica.grid(row=0, column=1, padx=5, pady=5)
 
-        ttk.Label(main_frame, text="Settore:", font=("Arial", 10)).grid(row=2, column=0, padx=5, pady=5, sticky="w")
-        self.settore = ttk.Combobox(main_frame, values=['Aerospace', 'Automotive'], state="readonly", width=27)
+        ttk.Label(input_frame, text="Settore:").grid(row=1, column=0, padx=5, pady=5, sticky="w")
+        self.settore = ttk.Combobox(input_frame, values=['Aerospace', 'Automotive'], state="readonly", width=27)
         self.settore.set("")
-        self.settore.grid(row=2, column=1, padx=5, pady=5)
+        self.settore.grid(row=1, column=1, padx=5, pady=5)
 
-        ttk.Label(main_frame, text="Tipologia:", font=("Arial", 10)).grid(row=3, column=0, padx=5, pady=5, sticky="w")
-        self.tipologia = ttk.Combobox(main_frame, values=['Laminato', 'Monolitico'], state="readonly", width=27)
+        ttk.Label(input_frame, text="Tipologia:").grid(row=2, column=0, padx=5, pady=5, sticky="w")
+        self.tipologia = ttk.Combobox(input_frame, values=['Laminato', 'Monolitico'], state="readonly", width=27)
         self.tipologia.set("")
-        self.tipologia.grid(row=3, column=1, padx=5, pady=5)
+        self.tipologia.grid(row=2, column=1, padx=5, pady=5)
 
-        ttk.Label(main_frame, text="Note:", font=("Arial", 10)).grid(row=4, column=0, padx=5, pady=5, sticky="w")
-        self.note = tk.Text(main_frame, width=30, height=3)
-        self.note.grid(row=4, column=1, padx=5, pady=5)
+        ttk.Label(input_frame, text="Note:").grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        self.note = tk.Text(input_frame, width=30, height=3, borderwidth=2, relief="groove")
+        self.note.grid(row=3, column=1, padx=5, pady=5)
 
-        # Bottone per calcolare il Lead Time
-        self.btn1 = ttk.Button(main_frame, text='Calcola LeadTime', style="primary.TButton", command=self.leadTime)
-        self.btn1.grid(row=5, column=1, pady=10, padx=5)
+        # Frame per il Lead Time con bordo
+        leadtime_frame = ttk.LabelFrame(main_frame, text="Lead Time", padding=10)
+        leadtime_frame.pack(fill="x", pady=10)
 
-        # Etichetta per mostrare il risultato
-        self.lt = ttk.Label(main_frame, text="", font=("Arial", 10, "bold"), foreground="blue")
-        self.lt.grid(row=6, column=1, pady=10, padx=5)
+        self.btn1 = ttk.Button(leadtime_frame, text='Calcola LeadTime', style="primary.TButton", command=self.leadTime)
+        self.btn1.pack(pady=5)
 
-        # Bottone per salvare la pratica
-        self.btn_save = ttk.Button(main_frame, text='Salva Pratica', style="success.TButton",
-                                   command=self.salva_pratica)
-        self.btn_save.grid(row=7, column=1, pady=5)
+        self.lt = ttk.Label(leadtime_frame, text="", font=("Arial", 10, "bold"), foreground="blue")
+        self.lt.pack(pady=5)
 
-        # Bottone per leggere le pratiche salvate
-        self.btn_read = ttk.Button(main_frame, text='Leggi Pratiche Salvate', style="info.TButton",
-                                   command=self.leggi_pratiche)
-        self.btn_read.grid(row=8, column=1, pady=5)
+        # Frame per i bottoni con bordo
+        button_frame = ttk.Frame(main_frame, borderwidth=2, relief="ridge", padding=10)
+        button_frame.pack(fill="x", pady=10)
+
+        self.btn_save = ttk.Button(button_frame, text='Salva Pratica', style="success.TButton", command=self.salva_pratica)
+        self.btn_save.pack(side="left", padx=5)
+
+        self.btn_read = ttk.Button(button_frame, text='Leggi Pratiche Salvate', style="info.TButton", command=self.leggi_pratiche)
+        self.btn_read.pack(side="right", padx=5)
 
     def leadTime(self):
-        """ Calcola il Lead Time basato sulla tipologia selezionata """
         tipo_selezionato = self.tipologia.get()
         if tipo_selezionato == "Monolitico":
             self.lt.config(text="Lead Time: 8 Wk da evasione schede tecniche", foreground="green")
@@ -85,12 +84,11 @@ class Applicazione:
             self.lt.config(text="⚠️ Seleziona una tipologia valida!", foreground="red")
 
     def salva_pratica(self):
-        """ Salva la pratica su un file CSV """
         numero_pratica = self.input1.get()
         settore = self.settore.get()
         tipologia = self.tipologia.get()
         note = self.note.get("1.0", tk.END).strip()
-        lead_time = self.lt.cget("text").replace("Lead Time: ", "")  # Estrarre solo il lead time
+        lead_time = self.lt.cget("text").replace("Lead Time: ", "")
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         if not numero_pratica or not settore or not tipologia or not lead_time:
@@ -99,7 +97,6 @@ class Applicazione:
 
         nuova_pratica = [numero_pratica, settore, tipologia, note, lead_time, timestamp]
 
-        # Verifica se il file esiste, altrimenti crea l'intestazione
         file_esiste = os.path.exists(CSV_FILE)
         with open(CSV_FILE, mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
@@ -110,7 +107,6 @@ class Applicazione:
         messagebox.showinfo("Successo", f"Pratica {numero_pratica} salvata con successo!")
 
     def leggi_pratiche(self):
-        """ Legge e mostra le pratiche salvate """
         if not os.path.exists(CSV_FILE):
             messagebox.showinfo("Info", "Nessuna pratica salvata.")
             return
@@ -123,22 +119,18 @@ class Applicazione:
             messagebox.showinfo("Info", "Nessuna pratica registrata nel file.")
             return
 
-        # Creazione di una nuova finestra per visualizzare i dati
         finestra_dati = tk.Toplevel()
         finestra_dati.title("Pratiche Salvate")
         finestra_dati.geometry("700x350")
 
-        text_area = tk.Text(finestra_dati, wrap="word", height=15, width=90)
+        text_area = tk.Text(finestra_dati, wrap="word", height=15, width=90, borderwidth=2, relief="ridge")
         text_area.pack(pady=10, padx=10)
 
-        # Inserisce i dati nel Text Widget
         for row in dati:
             text_area.insert(tk.END, "\t".join(row) + "\n")
 
-        text_area.config(state="disabled")  # Rende il testo non modificabile
+        text_area.config(state="disabled")
 
-
-# Avviare la GUI
 root = tk.Tk()
 app = Applicazione(root)
 root.mainloop()
